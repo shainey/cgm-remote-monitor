@@ -8,12 +8,7 @@ var client = Nightscout.client;
 
 (function () {
 
-  if (serverSettings === undefined) {
-    console.error('server settings were not loaded, will not call init');
-  } else {
-    client.init(serverSettings, Nightscout.plugins);
-  }
-  
+client.init(function loaded () {
   var translate = client.translate;
   
   var foodrec_template = { 
@@ -24,6 +19,9 @@ var client = Nightscout.client;
     , name: ''
     , portion: 0
     , carbs: 0
+    , fat: 0 // in grams
+    , protein: 0 // in grams
+    , energy: 0 // in kJ
     , gi: 2
     , unit: 'g'
   };
@@ -227,7 +225,10 @@ var client = Nightscout.client;
       .append($('<span>').attr('class','width100px').css('text-align','center').append(translate('Carbs')))
       .append($('<span>').attr('class','width100px').css('text-align','center').append(translate('GI')+' [1-3]'))
       .append($('<span>').attr('class','width150px').append(translate('Category')))
-      .append($('<span>').attr('class','width150px').append(translate('Subcategory')));
+      .append($('<span>').attr('class','width150px').append(translate('Subcategory')))
+      .append($('<span>').attr('class','width100px').append(translate('Fat [g]')))
+      .append($('<span>').attr('class','width100px').append(translate('Protein [g]')))
+      .append($('<span>').attr('class','width100px').append(translate('Energy [kJ]')));
 
     $('#fe_data').empty();
     
@@ -249,6 +250,9 @@ var client = Nightscout.client;
           .append($('<span>').addClass('width100px').css('text-align','center').append(foodlist[i].gi))
           .append($('<span>').addClass('width150px').append(foodlist[i].category))
           .append($('<span>').addClass('width150px').append(foodlist[i].subcategory))
+          .append($('<span>').addClass('width100px').append(foodlist[i].fat))
+          .append($('<span>').addClass('width100px').append(foodlist[i].protein))
+          .append($('<span>').addClass('width100px').append(foodlist[i].energy))
         );
     }
     
@@ -470,9 +474,12 @@ var client = Nightscout.client;
     $('#fe_name').val(foodrec.name);
     $('#fe_portion').val(foodrec.portion ? foodrec.portion : '');
     $('#fe_unit').val(foodrec.unit);
-    $('#fe_carbs').val(foodrec.carbs ? foodrec.carbs : '');
-    $('#fe_gi').val(foodrec.gi);
-    
+    $('#fe_carbs').val(foodrec.carbs ? foodrec.carbs : '')
+    $('#fe_gi').val(foodrec.gi)
+    $('#fe_fat').val(foodrec.fat ? foodrec.fat : '')
+    $('#fe_protein').val(foodrec.protein ? foodrec.protein : '')
+    $('#fe_energy').val(foodrec.energy ? foodrec.energy : '');
+
     $('#fe_quickpick_showhidden').prop('checked',showhidden);
 
     console.info(JSON.stringify(foodrec));
@@ -493,6 +500,12 @@ var client = Nightscout.client;
     foodrec.unit = $('#fe_unit').val();
     foodrec.carbs = parseInt($('#fe_carbs').val());
     foodrec.carbs = foodrec.carbs || 0;
+    foodrec.fat = parseInt($('#fe_fat').val());
+    foodrec.fat = foodrec.fat || 0;
+    foodrec.protein = parseInt($('#fe_protein').val());
+    foodrec.protein = foodrec.protein || 0;
+    foodrec.energy = parseInt($('#fe_energy').val());
+    foodrec.energy = foodrec.energy || 0;
     foodrec.gi = parseInt($('#fe_gi').val());
     
     showhidden = $('#fe_quickpick_showhidden').is(':checked');
@@ -662,5 +675,6 @@ var client = Nightscout.client;
     if (after) {
       after();
     }
-}
+  }
+});
 })();

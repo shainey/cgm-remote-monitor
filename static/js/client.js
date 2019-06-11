@@ -1,7 +1,11 @@
-// don't 'use strict' since serverSettings might not get set if status.js fails
+'use strict';
 
-if (serverSettings === undefined) {
-  console.error('server settings were not loaded, will not call init');
-} else {
-  window.Nightscout.client.init(serverSettings, Nightscout.plugins);
-}
+$(document).on('online', function() {
+	console.log('Application got online event, reloading');
+	window.location.reload();
+});
+
+$(document).ready(function() {
+	console.log('Application got ready event');
+	window.Nightscout.client.init();
+});
